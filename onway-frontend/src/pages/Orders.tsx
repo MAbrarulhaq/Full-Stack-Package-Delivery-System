@@ -60,9 +60,9 @@ export function Orders() {
       description={isCourier ? "Your assigned deliveries" : "Manage delivery orders across the fleet"}
       actions={
         canManage ? (
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="hidden sm:inline-flex bg-emerald-600 hover:bg-emerald-700 text-white">
             <Link to="/orders/new">
-              <Plus className="h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" />
               Create Order
             </Link>
           </Button>

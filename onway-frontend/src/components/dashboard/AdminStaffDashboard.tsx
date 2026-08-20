@@ -5,6 +5,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { KpiCard } from "./KpiCard";
 import { StatusOverview } from "./StatusOverview";
 import { RecentOrders } from "./RecentOrders";
+import { ShipmentChart } from "./ShipmentChart";
+
+function greeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 export function AdminStaffDashboard() {
   const { user } = useAuth();
@@ -16,6 +24,14 @@ export function AdminStaffDashboard() {
 
   return (
     <div className="space-y-6">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-foreground">
+          Hello {user?.name ? user.name.split(' ')[0] : 'there'},
+          <br />
+          {greeting()}
+        </h2>
+      </div>
+
       {statsError ? (
         <div className="rounded-lg border border-status-cancelled/30 bg-status-cancelled-bg px-4 py-3 text-sm text-status-cancelled">
           Some dashboard data couldn't be loaded.{" "}
@@ -28,7 +44,7 @@ export function AdminStaffDashboard() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard label="Total Orders" value={total} icon={Package} isLoading={statsLoading} />
         <KpiCard
-          label="Pending"
+          label="Pending Package"
           value={counts.pending}
           icon={Clock}
           isLoading={statsLoading}
@@ -52,18 +68,21 @@ export function AdminStaffDashboard() {
 
       <div className="grid gap-4 lg:grid-cols-5">
         <div className="lg:col-span-3">
-          <RecentOrders
-            orders={recentOrdersQuery.data?.data}
-            isLoading={recentOrdersQuery.isLoading}
-            isError={recentOrdersQuery.isError}
-            onRetry={() => recentOrdersQuery.refetch()}
-            canCreate
-          />
+          <ShipmentChart counts={counts} total={total} isLoading={statsLoading} />
         </div>
-        <div className="rounded-lg border border-border bg-surface p-4 sm:p-6 lg:col-span-2">
-          <h2 className="mb-4 text-sm font-semibold text-foreground">Status Overview</h2>
+        <div className="lg:col-span-2">
           <StatusOverview counts={counts} total={total} isLoading={statsLoading} />
         </div>
+      </div>
+
+      <div className="w-full">
+        <RecentOrders
+          orders={recentOrdersQuery.data?.data}
+          isLoading={recentOrdersQuery.isLoading}
+          isError={recentOrdersQuery.isError}
+          onRetry={() => recentOrdersQuery.refetch()}
+          canCreate
+        />
       </div>
 
       {isAdmin ? <UsersSection /> : null}
@@ -76,9 +95,9 @@ function UsersSection() {
   const { total, counts, isLoading } = useUserCounts();
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-4 sm:p-6">
+    <div className="rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-card)]">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-foreground">Users</h2>
+        <h2 className="text-base font-semibold text-foreground">System Users</h2>
         <Link
           to="/admin/users"
           className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"

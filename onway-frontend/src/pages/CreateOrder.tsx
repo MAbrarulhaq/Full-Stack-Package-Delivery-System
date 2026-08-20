@@ -17,7 +17,7 @@ export function CreateOrder() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  
+
   useEffect(() => {
     if (user?.role === "courier") {
       navigate("/orders", { replace: true });

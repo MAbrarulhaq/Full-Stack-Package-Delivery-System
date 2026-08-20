@@ -41,12 +41,13 @@ export function CourierDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold text-foreground">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-foreground">
+          Hello {user?.name ? user.name.split(' ')[0] : 'there'},
+          <br />
           {greeting()}
-          {user ? `, ${user.name}` : ""}
         </h2>
-        <p className="text-sm text-muted">My assigned deliveries at a glance.</p>
+        <p className="mt-2 text-sm text-muted-foreground">My assigned deliveries at a glance.</p>
       </div>
 
       {isError ? (

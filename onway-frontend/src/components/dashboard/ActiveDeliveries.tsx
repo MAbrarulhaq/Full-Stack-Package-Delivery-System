@@ -15,27 +15,32 @@ export function ActiveDeliveries({ orders }: { orders: Order[] }) {
   }
 
   return (
-    <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
+    <div className="flex flex-col gap-3">
       {orders.map((order) => (
-        <li key={order.id}>
+        <div key={order.id} className="group relative overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]">
           <Link
             to={`/orders/${order.id}`}
-            className="flex flex-col gap-2 px-4 py-4 transition-colors hover:bg-background/60 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+            className="flex flex-col gap-3 px-5 py-5 sm:flex-row sm:items-center sm:justify-between"
           >
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs text-primary">{order.id.slice(0, 8)}</span>
+            <div className="min-w-0 flex-1">
+              <div className="mb-2 flex items-center justify-between sm:mb-1 sm:justify-start sm:gap-3">
+                <span className="font-mono text-xs font-semibold text-emerald-600">#{order.id.slice(0, 8)}</span>
                 <OrderStatusBadge status={order.status} />
               </div>
-              <p className="mt-1 text-sm font-medium text-foreground">{order.customerName}</p>
-              <p className="mt-0.5 truncate text-xs text-muted">
-                {order.pickupAddress} → {order.dropoffAddress}
-              </p>
+              <p className="text-base font-semibold text-foreground">{order.customerName}</p>
+              <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className="truncate">{order.pickupAddress}</span>
+                <span className="shrink-0">→</span>
+                <span className="truncate">{order.dropoffAddress}</span>
+              </div>
             </div>
-            <div className="shrink-0 text-sm text-muted sm:text-right">{order.packageWeight}</div>
+            <div className="flex shrink-0 items-center justify-between border-t border-border pt-3 sm:flex-col sm:items-end sm:justify-center sm:border-0 sm:pt-0">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Weight</span>
+              <span className="text-sm font-semibold text-foreground">{order.packageWeight} kg</span>
+            </div>
           </Link>
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }
