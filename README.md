@@ -187,10 +187,3 @@ npm run dev                 # http://localhost:5173
 |---|---|
 | `VITE_API_URL` | `https://onway-api.up.railway.app` |
 
-> ⚠️ **Before pushing this repo publicly:** the `.env` files currently in these zips contain a real `JWT_SECRET` and a local `DATABASE_URL`. Add `.env`/`.env.test` to `.gitignore` (already done) and double-check they aren't staged — then generate a brand-new `JWT_SECRET` for the deployed environment. Never reuse a secret that ever touched a commit.
-
----
-
-## Deployment
-
-See the accompanying deployment guide for the full step-by-step (Railway for backend + Postgres, Vercel/Netlify for frontend, CORS wiring, and post-deploy verification).
