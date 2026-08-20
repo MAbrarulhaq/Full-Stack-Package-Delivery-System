@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, PackageX, TriangleAlert, RotateCw, Plus, Filter } from "lucide-react";
+import { PackageX, TriangleAlert, RotateCw, Plus, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OrderStatusBadge } from "@/components/orders/OrderStatusBadge";

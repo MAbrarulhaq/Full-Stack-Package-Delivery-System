@@ -20,6 +20,10 @@ const envSchema = z.object({
     .string()
     .min(16, "JWT_SECRET must be at least 16 characters long"),
   JWT_EXPIRES_IN: z.string().min(1).default("1d"),
+  // Deployed frontend origin allowed by CORS, in addition to the local dev
+  // origin below. Unset in local dev; required in production to reach the
+  // API from anywhere other than localhost.
+  FRONTEND_URL: z.string().url("FRONTEND_URL must be a valid URL").optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

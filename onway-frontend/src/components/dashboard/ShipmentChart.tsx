@@ -1,5 +1,4 @@
 import { ORDER_STATUS_LABELS, ORDER_STATUS_STYLES } from "@/lib/order-status";
-import { ORDER_STATUSES } from "@/types/order";
 import type { OrderStatus } from "@/types/order";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -14,7 +13,7 @@ interface ShipmentChartProps {
  * Pure CSS/SVG bar chart visualizing order statuses.
  * Matches the reference design's "Shipments Statistics" section.
  */
-export function ShipmentChart({ counts, total, isLoading }: ShipmentChartProps) {
+export function ShipmentChart({ counts, total: _total, isLoading }: ShipmentChartProps) {
   // We only show a subset of statuses in the chart for clarity, just like the reference
   const chartStatuses: OrderStatus[] = [
     "pending",

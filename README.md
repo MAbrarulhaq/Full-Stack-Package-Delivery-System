@@ -22,7 +22,7 @@ A full-stack delivery tracking module built for the Onway technical assessment: 
 | Frontend | React 19 + Vite |
 | Frontend data layer | TanStack Query |
 | Styling | Tailwind CSS v4 + Radix UI primitives |
-| Testing | Node's built-in `node:test` — 74 tests |
+| Testing | Node's built-in `node:test` — 89 test cases, 0 failing (verified) |
 
 ---
 
@@ -180,6 +180,7 @@ npm run dev                 # http://localhost:5173
 | `PORT` | `3000` | Most PaaS providers override this — see deployment notes |
 | `JWT_SECRET` | *(32+ random hex chars)* | Min. 16 chars; **generate a fresh one for production** |
 | `JWT_EXPIRES_IN` | `1d` | e.g. `1h`, `1d`, `7d` |
+| `FRONTEND_URL` | `https://onway.vercel.app` | Deployed frontend origin, allowed by CORS. Optional — `http://localhost:5173` is always allowed for local dev regardless of this value. |
 
 **Frontend** (`frontend/onway-frontend/.env`)
 
