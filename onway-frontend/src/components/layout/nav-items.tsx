@@ -1,15 +1,32 @@
-import { LayoutDashboard, Package, Users } from "lucide-react";
+import { LayoutDashboard, Package, UsersRound } from "lucide-react";
+import type { UserRole } from "@/types/auth";
 
 export interface NavItem {
   label: string;
   to: string;
   icon: typeof LayoutDashboard;
-  /** True for pages not built yet (Orders, Couriers) -- rendered as inert placeholders, per Step 7.2/7.3 scope. */
+  // True for pages not built yet -- rendered as inert placeholders.
   comingSoon?: boolean;
 }
 
-export const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
-  { label: "Orders", to: "/orders", icon: Package, comingSoon: true },
-  { label: "Couriers", to: "/couriers", icon: Users, comingSoon: true },
-];
+export function getNavItems(role: UserRole | undefined): NavItem[] {
+  if (role === "courier") {
+    return [
+      { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+      { label: "My Deliveries", to: "/orders", icon: Package },
+    ];
+  }
+
+  if (role === "admin") {
+    return [
+      { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+      { label: "Orders", to: "/orders", icon: Package },
+      { label: "Users", to: "/admin/users", icon: UsersRound },
+    ];
+  }
+
+  return [
+    { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+    { label: "Orders", to: "/orders", icon: Package },
+  ];
+}

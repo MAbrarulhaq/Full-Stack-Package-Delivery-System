@@ -10,20 +10,12 @@ import type { IdParam } from "../validators/common.validator";
 import type { PaginationQuery } from "../validators/common.validator";
 import { getAuthUser } from "../middleware/auth";
 
-/**
- * Controllers are thin: pull already-validated data out of the Hono
- * context (the zValidator middleware chained in routes.ts guarantees the
- * shape at runtime -- the `as` casts below just restate that guarantee
- * for TypeScript, since Context's validation-target typing isn't threaded
- * across the route/controller file boundary), call exactly one service
- * method, and shape the HTTP response. No business logic, no direct
- * Drizzle access, no transaction management -- all of that lives in
- * order.service.ts.
- *
- * As of Step 4, every route these handlers serve requires jwtAuth() to
- * have already run (see orders.routes.ts), so getAuthUser(c) is always
- * safe to call here.
- */
+
+ //Thin controllers: extract validated data, call one service method,
+ // and shape the HTTP response. No business logic, Drizzle access, or
+ // transaction management—those belong in order.service.ts.
+  // All routes require jwtAuth(), so getAuthUser(c) is safe to use.
+ 
 export const orderController = {
   async create(c: Context) {
     const body = c.req.valid("json" as never) as CreateOrderBody;
@@ -54,7 +46,7 @@ export const orderController = {
     return c.json({ success: true, data: order }, 200);
   },
 
-  /** GET /orders/my -- courierId is taken from the JWT, never from client input. */
+  // GET /orders/my -- courierId is taken from the JWT, never from client input. 
   async myOrders(c: Context) {
     const { page, limit } = c.req.valid("query" as never) as PaginationQuery;
     const authUser = getAuthUser(c);

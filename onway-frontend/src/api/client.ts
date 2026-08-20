@@ -1,12 +1,12 @@
 import type { ApiErrorEnvelope, ApiSuccessEnvelope } from "@/types/api";
 
-/**
- * Backend URL comes from an env var, never hardcoded (see .env.example).
- * Falls back to the known local dev port only as a convenience default.
- */
+
+ // Backend URL comes from an env var, never hardcoded (see .env.example).
+ // Falls back to the known local dev port only as a convenience default.
+ 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
-/** Thrown for every non-2xx or {success:false} response, carrying the backend's own error code/message. */
+// Thrown for every non-2xx or {success:false} response, carrying the backend's own error code/message. 
 export class ApiError extends Error {
   readonly status: number;
   readonly code: string;
@@ -19,7 +19,7 @@ export class ApiError extends Error {
   }
 }
 
-/** Thrown when the network request itself fails (server unreachable, CORS, offline, etc.) -- distinct from an API error response. */
+//Thrown when the network request itself fails (server unreachable, CORS, offline, etc.) -- distinct from an API error response.
 export class NetworkError extends Error {
   constructor() {
     super("Unable to reach the server. Check your connection and try again.");
@@ -29,18 +29,18 @@ export class NetworkError extends Error {
 
 let authToken: string | null = null;
 
-/** Called by AuthContext on login/logout/init -- keeps the token used by every request in one place. */
+//Called by AuthContext on login/logout/init -- keeps the token used by every request in one place. 
 export function setAuthToken(token: string | null): void {
   authToken = token;
 }
 
-/**
- * Makes a request against the Onway API and returns the parsed JSON body
- * (the full envelope, e.g. { success, data, pagination? }) typed as T.
- * Throws ApiError for any backend error response (using the real
- * code/message from src/errors/), or NetworkError if the request never
- * reached the server.
- */
+
+ // Makes a request against the Onway API and returns the parsed JSON body
+ // (the full envelope, e.g. { success, data, pagination? }) typed as T.
+ //Throws ApiError for any backend error response (using the real
+ //code/message from src/errors/), or NetworkError if the request never
+ //reached the server.
+ 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   if (!(init.body instanceof FormData)) {

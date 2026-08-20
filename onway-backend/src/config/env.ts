@@ -1,17 +1,12 @@
 import "dotenv/config";
 import { z } from "zod";
 
-/**
- * All environment variables the app depends on, validated once at startup.
- * Failing fast here (instead of getting an undefined DATABASE_URL deep
- * inside a query) is deliberate: a misconfigured deployment should crash
- * immediately with a clear message, not at the first incoming request.
- *
- * JWT_SECRET/JWT_EXPIRES_IN are required as of Step 4 — the auth
- * middleware (src/middleware/auth.ts) and JWT utility (src/utils/jwt.ts)
- * both depend on them, so the app should refuse to start rather than
- * silently run with authentication broken.
- */
+
+ // Failing fast here (instead of getting an undefined DATABASE_URL deep
+ //inside a query) is deliberate: a misconfigured deployment should crash
+ //immediately with a clear message, not at the first incoming request.
+ 
+
 const envSchema = z.object({
   DATABASE_URL: z
     .string()

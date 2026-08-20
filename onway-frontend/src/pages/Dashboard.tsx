@@ -1,26 +1,33 @@
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { AdminStaffDashboard } from "@/components/dashboard/AdminStaffDashboard";
+import { CourierDashboard } from "@/components/dashboard/CourierDashboard";
 
-/**
- * Deliberately minimal for Step 7.3 -- real KPI/analytics content is a
- * later step (needs a decision on how to derive honest numbers from the
- * existing API; see the Step 7 planning discussion). This page exists
- * only to prove the authenticated shell + routing works end-to-end.
- */
+
 export function Dashboard() {
   const { user } = useAuth();
+  const isCourier = user?.role === "courier";
+  const canManage = user?.role === "admin" || user?.role === "staff";
 
   return (
-    <AppShell title="Overview" description="Monitor your deliveries and operations">
-      <div className="flex min-h-[60vh] flex-col items-center justify-center rounded-lg border border-dashed border-border text-center">
-        <p className="text-sm font-medium text-foreground">
-          Welcome{user ? `, ${user.name}` : ""}
-        </p>
-        <p className="mt-1 max-w-xs text-sm text-muted">
-          The dashboard is under construction. Order management and delivery
-          tracking are coming in the next steps.
-        </p>
-      </div>
+    <AppShell
+      title="Dashboard"
+      description={isCourier ? undefined : "Overview of your delivery operations."}
+      actions={
+        canManage ? (
+          <Button asChild size="sm">
+            <Link to="/orders/new">
+              <Plus className="h-4 w-4" />
+              Create Order
+            </Link>
+          </Button>
+        ) : undefined
+      }
+    >
+      {isCourier ? <CourierDashboard /> : <AdminStaffDashboard />}
     </AppShell>
   );
 }

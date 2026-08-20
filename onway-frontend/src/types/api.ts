@@ -1,4 +1,4 @@
-/** Matches src/middleware/error-handler.ts and every controller's success response exactly. */
+//Matches src/middleware/error-handler.ts and every controller's success response exactly.
 export interface ApiSuccessEnvelope<T> {
   success: true;
   data: T;

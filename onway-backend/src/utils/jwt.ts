@@ -3,7 +3,7 @@ import { env } from "../config/env";
 import type { UserRole } from "../repositories/user.repository";
 import { InvalidTokenError, ExpiredTokenError } from "../errors/index";
 
-/** The identity carried by a verified JWT — attached to Hono context by jwtAuth. */
+// The identity carried by a verified JWT — attached to Hono context by jwtAuth.
 export interface AuthUser {
   id: string;
   role: UserRole;
@@ -11,11 +11,7 @@ export interface AuthUser {
 
 const secretKey = new TextEncoder().encode(env.JWT_SECRET);
 
-/**
- * Signs a JWT for the given user. Payload is intentionally minimal — just
- * enough identity to authorize requests (id as the standard `sub` claim,
- * role as a custom claim). No email, name, or other PII in the token.
- */
+
 export async function signAuthToken(user: AuthUser): Promise<string> {
   return new SignJWT({ role: user.role })
     .setProtectedHeader({ alg: "HS256" })
@@ -25,14 +21,10 @@ export async function signAuthToken(user: AuthUser): Promise<string> {
     .sign(secretKey);
 }
 
-/**
- * Verifies a JWT's signature and expiration, and extracts the identity.
- * Throws ExpiredTokenError specifically for an expired-but-otherwise-valid
- * token, and InvalidTokenError for every other failure (bad signature,
- * malformed token, missing claims) — the auth middleware maps both to 401,
- * but distinct error codes are useful for client-side handling
- * (e.g. "refresh and retry" vs "log in again").
- */
+// Verifies the JWT and extracts the user identity.
+// Throws a specific error for expired tokens and invalid tokens.
+
+
 export async function verifyAuthToken(token: string): Promise<AuthUser> {
   try {
     const { payload } = await jwtVerify(token, secretKey);

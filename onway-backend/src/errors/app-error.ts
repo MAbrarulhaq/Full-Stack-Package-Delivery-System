@@ -1,10 +1,6 @@
-/**
- * Base class for every typed domain/application error. Each subclass
- * carries the HTTP status it maps to and a machine-readable `code`, so
- * the single global `app.onError` handler (src/middleware/error-handler.ts)
- * can turn any thrown AppError into the consistent JSON error shape
- * without any route/controller needing its own try/catch.
- */
+// Base class for typed application errors.
+// Each error includes an HTTP status and machine-readable code.
+// The global error handler converts these into a consistent JSON response.
 export abstract class AppError extends Error {
   abstract readonly statusCode: number;
   readonly code: string;
@@ -17,7 +13,7 @@ export abstract class AppError extends Error {
   }
 }
 
-/** 400 — malformed or semantically invalid request input. */
+// 400 — invalid request input.
 export class ValidationError extends AppError {
   readonly statusCode = 400;
   constructor(message: string, code = "VALIDATION_ERROR") {
@@ -25,7 +21,7 @@ export class ValidationError extends AppError {
   }
 }
 
-/** 404 — the requested resource does not exist. */
+// 404 — resource not found.
 export class NotFoundError extends AppError {
   readonly statusCode = 404;
   constructor(message: string, code = "NOT_FOUND") {
@@ -33,7 +29,7 @@ export class NotFoundError extends AppError {
   }
 }
 
-/** 401 — no (or invalid) credentials supplied. */
+// 401 — missing or invalid credentials.
 export class UnauthorizedError extends AppError {
   readonly statusCode = 401;
   constructor(message = "Authentication required", code = "UNAUTHORIZED") {
@@ -41,7 +37,7 @@ export class UnauthorizedError extends AppError {
   }
 }
 
-/** 403 — authenticated, but not allowed to perform this action. */
+// 403 — authenticated but not authorized.
 export class ForbiddenError extends AppError {
   readonly statusCode = 403;
   constructor(
@@ -52,7 +48,7 @@ export class ForbiddenError extends AppError {
   }
 }
 
-/** 409 — the request is well-formed but conflicts with current state. */
+// 409 — request conflicts with the current state.
 export class ConflictError extends AppError {
   readonly statusCode = 409;
   constructor(message: string, code = "CONFLICT") {

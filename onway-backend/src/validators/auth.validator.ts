@@ -1,12 +1,7 @@
 import { z } from "zod";
 
-/**
- * `.strict()` rejects any unexpected field — including `role` or
- * `passwordHash` — so a client can never influence its own role or
- * inject a pre-hashed password at registration. Role always comes from
- * the `users.role` column default (`staff`), enforced by never reading
- * `role` off this validated body anywhere in the service.
- */
+// Rejects unexpected fields like `role` or `passwordHash`.
+// The user's role always comes from the database default (`staff`).
 export const registerSchema = z
   .object({
     name: z.string().trim().min(1, "name is required"),

@@ -4,11 +4,8 @@ import { orderStatusEnum } from "./enums";
 import { orders } from "./orders";
 import { users } from "./users";
 
-/**
- * Append-only audit trail. Rows are never updated or deleted by the
- * application — every successful transition inserts a new row here in
- * the same transaction as the `orders.status` update (see blueprint §K).
- */
+// Append-only audit trail. Rows are never updated or deleted.
+// Every transition inserts a row in the same transaction as the order update.
 export const orderStatusHistory = pgTable(
   "order_status_history",
   {
@@ -17,19 +14,17 @@ export const orderStatusHistory = pgTable(
       .notNull()
       .references(() => orders.id, { onDelete: "cascade" }),
     status: orderStatusEnum("status").notNull(),
-    // Nullable: NULL for system-generated rows (e.g. the initial `pending`
-    // row created at POST /orders, before any staff action), populated
-    // from the authenticated user once JWT auth is wired up.
+    // Nullable for system-generated rows; set from the authenticated user.
     changedBy: uuid("changed_by").references(() => users.id, {
       onDelete: "set null",
     }),
-    // This is the "timestamp" field the assessment asks for.
+    // Timestamp required by the assessment.
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
   },
   (table) => [
-    // Powers GET /orders/:id — full history for one order, in order.
+    // Index for GET /orders/:id history queries.
     index("order_status_history_order_id_created_at_idx").on(
       table.orderId,
       table.createdAt,

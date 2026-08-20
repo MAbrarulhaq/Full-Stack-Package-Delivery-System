@@ -1,10 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/context/AuthContext";
-import { ProtectedRoute, PublicOnlyRoute } from "@/routes/ProtectedRoute";
+import { ProtectedRoute, PublicOnlyRoute, AdminRoute } from "@/routes/ProtectedRoute";
 import { Login } from "@/pages/Login";
 import { Dashboard } from "@/pages/Dashboard";
 import { Signup } from "@/pages/Signup";
+import { Orders } from "@/pages/Orders";
+import { CreateOrder } from "@/pages/CreateOrder";
+import { OrderDetails } from "@/pages/OrderDetails";
+import { AdminUsers } from "@/pages/AdminUsers";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +47,38 @@ function App() {
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders/new"
+              element={
+                <ProtectedRoute>
+                  <CreateOrder />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders/:id"
+              element={
+                <ProtectedRoute>
+                  <OrderDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <AdminRoute>
+                  <AdminUsers />
+                </AdminRoute>
               }
             />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -1,11 +1,17 @@
 import { db } from "../db/index";
 import { userRepository } from "../repositories/user.repository";
-import type { User } from "../repositories/user.repository";
+import type { User, UserRole } from "../repositories/user.repository";
 import { hashPassword, verifyPassword } from "../utils/password";
 import { signAuthToken } from "../utils/jwt";
 import { toSafeUser } from "../utils/user-dto";
 import type { SafeUser } from "../utils/user-dto";
-import { EmailAlreadyRegisteredError, InvalidCredentialsError, NotFoundError } from "../errors/index";
+import {
+  EmailAlreadyRegisteredError,
+  InvalidCredentialsError,
+  NotFoundError,
+  UserNotFoundError,
+  LastAdminError,
+} from "../errors/index";
 
 export interface RegisterInput {
   name: string;
@@ -23,14 +29,25 @@ export interface LoginResult {
   token: string;
 }
 
+export interface ListUsersInput {
+  page: number;
+  limit: number;
+  role?: UserRole;
+  search?: string;
+}
+
+export interface ListUsersResult {
+  data: SafeUser[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+
 export const userService = {
-  /**
-   * Returns SAFE user objects (passwordHash stripped via toSafeUser),
-   * same as every other method in this service. GET /users/couriers
-   * (added when this was first exposed over HTTP) would otherwise leak
-   * password hashes — this was a repository-level function with no
-   * route before, so its output was never actually sanitized until now.
-   */
   async getCouriers(): Promise<SafeUser[]> {
     const couriers = await userRepository.findCouriers(db);
     return couriers.map(toSafeUser);
@@ -39,15 +56,6 @@ export const userService = {
   async getUserById(id: string): Promise<User | undefined> {
     return userRepository.findById(db, id);
   },
-
-  /**
-   * Public registration. `role` is never accepted here -- the validated
-   * input type (RegisterInput) doesn't even have a `role` field, and the
-   * repository insert omits it entirely so the `users.role` column
-   * default ('staff', set in the DB schema) is what actually applies.
-   * Does NOT issue a JWT -- see the Step 4 plan note on register/login
-   * being kept as separate concerns.
-   */
   async register(input: RegisterInput): Promise<SafeUser> {
     const existing = await userRepository.findByEmail(db, input.email);
     if (existing) {
@@ -66,12 +74,7 @@ export const userService = {
     return toSafeUser(user);
   },
 
-  /**
-   * Deliberately uses the SAME error (InvalidCredentialsError, generic
-   * "Invalid email or password") whether the email doesn't exist or the
-   * password is wrong -- never lets a caller distinguish the two, which
-   * would otherwise let them enumerate registered emails.
-   */
+ 
   async login(input: LoginInput): Promise<LoginResult> {
     const user = await userRepository.findByEmail(db, input.email);
     if (!user) {
@@ -88,7 +91,7 @@ export const userService = {
     return { user: toSafeUser(user), token };
   },
 
-  /** Used by GET /auth/me -- the JWT already proved identity, this just fetches the current row. */
+  // Used by GET /auth/me -- the JWT already proved identity, this just fetches the current row. 
   async getCurrentUser(id: string): Promise<SafeUser> {
     const user = await userRepository.findById(db, id);
     if (!user) {
@@ -98,6 +101,66 @@ export const userService = {
       // returning undefined.
       throw new NotFoundError("User not found", "USER_NOT_FOUND");
     }
+    return toSafeUser(user);
+  },
+
+  // GET /users (admin-only) -- same { data, pagination } shape as listOrders(). 
+  async listUsers(input: ListUsersInput): Promise<ListUsersResult> {
+    const { page, limit, role, search } = input;
+
+    const [rows, total] = await Promise.all([
+      userRepository.list(db, { page, limit, role, search }),
+      userRepository.count(db, { role, search }),
+    ]);
+
+    return {
+      data: rows.map(toSafeUser),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / limit)),
+      },
+    };
+  },
+
+  
+  async updateUserRole(targetId: string, role: UserRole): Promise<SafeUser> {
+    const target = await userRepository.findById(db, targetId);
+    if (!target) {
+      throw new UserNotFoundError(targetId);
+    }
+
+    if (target.role === role) {
+      return toSafeUser(target);
+    }
+
+    if (target.role === "admin" && role !== "admin") {
+      const adminCount = await userRepository.countByRole(db, "admin");
+      if (adminCount <= 1) {
+        throw new LastAdminError();
+      }
+    }
+
+    const updated = await userRepository.updateRole(db, targetId, role);
+    // updated is guaranteed defined: we just confirmed the row exists above.
+    return toSafeUser(updated as User);
+  },
+  async createUserAsAdmin(input: RegisterInput & { role: UserRole }): Promise<SafeUser> {
+    const existing = await userRepository.findByEmail(db, input.email);
+    if (existing) {
+      throw new EmailAlreadyRegisteredError();
+    }
+
+    const passwordHash = await hashPassword(input.password);
+
+    const user = await userRepository.create(db, {
+      name: input.name,
+      email: input.email,
+      passwordHash,
+      role: input.role,
+    });
+
     return toSafeUser(user);
   },
 };

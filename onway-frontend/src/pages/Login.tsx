@@ -61,7 +61,7 @@ export function Login() {
               </div>
           </div>
 
-          <div className="mb-8">
+          <div className="mt-8 mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">Welcome back</h1>
             <p className="mt-1.5 text-sm text-muted">Sign in to your account to continue</p>
           </div>

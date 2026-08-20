@@ -7,11 +7,7 @@ function getInitials(name: string): string {
   return (first + last).toUpperCase();
 }
 
-/**
- * Initials-only avatar -- the backend's User model has no photo/avatar
- * field, so an image+fallback component (the usual shadcn Avatar) would
- * be dead weight. This is intentionally simple.
- */
+
 export function UserAvatar({ name, className }: { name: string; className?: string }) {
   return (
     <div

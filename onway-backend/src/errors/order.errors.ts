@@ -7,11 +7,7 @@ export class OrderNotFoundError extends NotFoundError {
   }
 }
 
-/**
- * Thrown when the domain state machine (src/domain/order-status.ts)
- * rejects a requested transition. The service layer is the only caller —
- * see order.service.ts.
- */
+// Thrown when the requested status transition is not allowed.
 export class InvalidTransitionError extends ConflictError {
   constructor(current: OrderStatus, next: OrderStatus) {
     super(
@@ -21,7 +17,7 @@ export class InvalidTransitionError extends ConflictError {
   }
 }
 
-/** More specific message than a generic InvalidTransitionError for the common "already delivered" cancel attempt. */
+// Thrown when trying to cancel an order that is already delivered.
 export class OrderAlreadyDeliveredError extends ConflictError {
   constructor(id: string) {
     super(
@@ -31,7 +27,7 @@ export class OrderAlreadyDeliveredError extends ConflictError {
   }
 }
 
-/** More specific message for cancelling an order that's already cancelled. */
+// Thrown when trying to cancel an order that is already cancelled.
 export class OrderAlreadyCancelledError extends ConflictError {
   constructor(id: string) {
     super(`Order ${id} is already cancelled`, "ORDER_ALREADY_CANCELLED");

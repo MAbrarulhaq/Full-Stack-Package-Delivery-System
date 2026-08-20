@@ -1,11 +1,15 @@
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { NAV_ITEMS } from "./nav-items";
+import { getNavItems } from "./nav-items";
+import { useAuth } from "@/hooks/useAuth";
 
 export function NavList({ onNavigate }: { onNavigate?: () => void }) {
+  const { user } = useAuth();
+  const items = getNavItems(user?.role);
+
   return (
     <nav className="flex flex-col gap-0.5 px-3">
-      {NAV_ITEMS.map((item) => {
+      {items.map((item) => {
         const Icon = item.icon;
 
         if (item.comingSoon) {

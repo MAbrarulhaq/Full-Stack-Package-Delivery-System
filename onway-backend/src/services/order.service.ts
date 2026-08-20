@@ -44,18 +44,8 @@ export interface PaginationInput {
 }
 
 export const orderService = {
-  /**
-   * Creates the order AND its initial `pending` history row in one
-   * transaction. `status` is never accepted from the caller — it's
-   * always `pending`, enforced here (the repository doesn't even expose
-   * a way to set it on create; see CreateOrderInput on the repository).
-   *
-   * `changedBy` is optional and defaults to null (kept for callers like
-   * seed scripts that don't have an authenticated user). As of Step 4,
-   * POST /orders requires auth, so the controller always passes the
-   * creating staff member's id here — the initial history row is now
-   * attributed, not just later transitions.
-   */
+ // Creates the order and its initial pending history in one transaction.
+// The status always starts as `pending`; `changedBy` records who created it.
   async createOrder(input: CreateOrderInput, changedBy: string | null = null): Promise<Order> {
     return db.transaction(async (tx) => {
       const order = await orderRepository.createOrder(tx, {
@@ -102,19 +92,9 @@ export const orderService = {
     }
     return order;
   },
-
-  /**
-   * Same lookup as getOrderById, plus a role-aware ownership check:
-   * admin/staff can view any order; a courier can only view an order
-   * where orders.courierId matches their own id. This is the fix for
-   * the "any courier can read any order" gap — the route's requireRole
-   * only proves the caller IS *a* courier, not that they own THIS order,
-   * so the check has to happen here with the specific order in hand.
-   *
-   * Returns the same OrderNotFoundError for a missing order regardless
-   * of role (no information leak about existence), and ForbiddenError
-   * for an existing order that belongs to a different courier.
-   */
+// Gets an order and checks courier ownership.
+// Admin/staff can view any order; couriers can only view assigned orders.
+// Missing orders return the same error for every role.
   async getOrderByIdForUser(id: string, authUser: AuthUser): Promise<OrderWithHistory> {
     const order = await this.getOrderById(id);
 
@@ -125,12 +105,8 @@ export const orderService = {
     return order;
   },
 
-  /**
-   * Validates the transition against the domain state machine, then
-   * updates `orders.status` and inserts the history row atomically.
-   * `changedBy` is nullable — it stays null until JWT auth (a later
-   * bonus step) supplies an authenticated user id.
-   */
+ // Validates the status transition, updates the order, and records the change
+// in history within the same transaction.
   async updateOrderStatus(
     id: string,
     next: OrderStatus,
@@ -161,13 +137,8 @@ export const orderService = {
     });
   },
 
-  /**
-   * DELETE /orders/:id is a cancellation, never a physical delete. Reuses
-   * the same domain transition check as updateOrderStatus (single source
-   * of truth for "is X -> cancelled allowed"), then maps a rejected
-   * transition to the more specific error the caller already knows about
-   * (already delivered / already cancelled) for a clearer API response.
-   */
+  // DELETE is a cancellation, not a physical delete.
+// Uses the same transition rules and returns specific cancellation errors.
   async cancelOrder(id: string, changedBy: string | null = null): Promise<Order> {
     return db.transaction(async (tx) => {
       const order = await orderRepository.findById(tx, id);
@@ -199,16 +170,8 @@ export const orderService = {
     });
   },
 
-  /**
-   * Courier assignment. Validates the target id refers to a real user
-   * with role='courier' BEFORE writing — a non-existent id or a
-   * staff/admin id is rejected with a specific typed error rather than
-   * silently succeeding or failing a foreign-key constraint with a raw
-   * DB error. Never touches `status` (explicit requirement) — only
-   * `courierId`/`updatedAt`. Reassignment is explicitly allowed: this
-   * method doesn't check whether the order already has a different
-   * courier, since nothing in the spec restricts reassignment.
-   */
+ // Validates that the target user exists and has the courier role.
+// Assigns or reassigns the courier without changing the order status.
   async assignCourier(orderId: string, courierId: string): Promise<Order> {
     const order = await orderRepository.findById(db, orderId);
     if (!order) {
@@ -228,14 +191,8 @@ export const orderService = {
     return updated as Order;
   },
 
-  /**
-   * Courier's own order list, in the same { data, pagination } shape as
-   * listOrders() for a consistent API response style. `courierId` must
-   * come from the authenticated JWT user (see order.controller.ts) —
-   * this method has no way to distinguish "my orders" from "anyone's
-   * orders" on its own, so the controller/route boundary is what
-   * actually enforces "you can only see your own".
-   */
+  // Returns the authenticated courier's assigned orders with pagination.
+// The courier ID comes from the JWT, not the request.
   async getOrdersByCourier(
     courierId: string,
     params: PaginationInput,

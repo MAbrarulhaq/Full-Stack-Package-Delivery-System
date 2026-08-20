@@ -42,6 +42,11 @@ export function Signup() {
       return;
     }
 
+    if (password.length < 8) {
+      setErrorMessage("Password must be at least 8 characters long.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -80,17 +85,18 @@ export function Signup() {
       <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-20">
         <div className="mx-auto w-full max-w-sm">
           {/* Brand */}
-          <div className="mb-10">
-            <span className="text-xl font-semibold tracking-tight text-foreground">
-              Onway
-            </span>
-            <p className="mt-1 text-sm text-muted">
-              Logistics platform
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white font-semibold">
+              O
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-foreground">Onway</h2>
+              <p className="text-sm text-muted">Logistics Management Platform</p>
+            </div>
           </div>
 
           {/* Heading */}
-          <div className="mb-8">
+          <div className="mt-8 mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               Create your account
             </h1>
@@ -157,6 +163,7 @@ export function Signup() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
                   required
+                  minLength={8}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -182,7 +189,7 @@ export function Signup() {
               </div>
 
               <p className="text-xs text-muted">
-                Your account will be created with the default staff role.
+                Must be at least 8 characters. Your account is created with the staff role.
               </p>
             </div>
 

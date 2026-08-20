@@ -1,14 +1,4 @@
-/**
- * Fixture helpers used by every test file to arrange scenarios. Every
- * behavioral action goes through app.request() (the real Hono app), same
- * as the tests themselves -- the ONE exception is promoting a user's
- * role, since no API endpoint exists for that (registration always
- * defaults to 'staff' by design -- see Step 4's report). That one write
- * is a direct DB update used purely for fixture setup, mirroring exactly
- * what was done manually via `docker exec psql` during manual testing --
- * it is never used to assert behavior, only to arrange a scenario the
- * HTTP layer is then tested against.
- */
+
 import { sql } from "drizzle-orm";
 import app from "../../src/app";
 import { db } from "../../src/db/index";
@@ -38,13 +28,9 @@ export function authHeader(token: string): Record<string, string> {
   return { Authorization: `Bearer ${token}` };
 }
 
-/**
- * Registers (via the real HTTP endpoint), optionally promotes the role
- * via direct DB write (see file docstring), then logs in (also via the
- * real HTTP endpoint) to get a JWT that reflects the final role. Throws
- * loudly on any unexpected status so a broken fixture never masquerades
- * as a passing test.
- */
+// Registers and logs in through the real HTTP endpoints.
+// Optionally sets the user's role directly in the database.
+// Throws on unexpected responses so fixture failures are obvious.
 export async function registerAndLogin(
   role: UserRole = "staff",
   overrides: { name?: string; password?: string } = {},

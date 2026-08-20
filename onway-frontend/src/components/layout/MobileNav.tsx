@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/
 import { NavList } from "./NavList";
 import { UserMenu } from "./UserMenu";
 
-/** Mobile-only (hidden at md+ where the persistent Sidebar takes over). Closes automatically after navigating. */
+// Mobile-only (hidden at md+ where the persistent Sidebar takes over). Closes automatically after navigating. 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
 

@@ -1,12 +1,12 @@
-/**
- * The login screen's one deliberate visual flourish: a quiet, looping dot
- * traveling a pickup -> drop-off path. Pure CSS (offset-path/offset-distance)
- * applied to an SVG circle IN THE SAME COORDINATE SPACE as the static path
- * (rather than a separately-positioned HTML element), so it stays aligned
- * regardless of how the SVG itself is scaled by its container. No JS, no
- * animation library -- respects prefers-reduced-motion via the global rule
- * in index.css since it's a standard CSS animation, not SMIL.
- */
+
+ //The login screen's one deliberate visual flourish: a quiet, looping dot
+ //traveling a pickup -> drop-off path. Pure CSS (offset-path/offset-distance)
+ //applied to an SVG circle IN THE SAME COORDINATE SPACE as the static path
+ //(rather than a separately-positioned HTML element), so it stays aligned
+ //regardless of how the SVG itself is scaled by its container. No JS, no
+ //animation library -- respects prefers-reduced-motion via the global rule
+ // in index.css since it's a standard CSS animation, not SMIL.
+
 export function RouteIllustration() {
   const pathD = "M 40 260 C 120 260, 140 60, 260 60 S 380 200, 460 200";
 

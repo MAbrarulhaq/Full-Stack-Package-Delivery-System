@@ -7,9 +7,8 @@ import type {
   RegisterPayload,
 } from "@/types/auth";
 
-/**
- * POST /auth/login
- */
+
+ // POST /auth/login
 export async function login(
   payload: LoginPayload,
 ): Promise<LoginResult> {
@@ -24,9 +23,9 @@ export async function login(
   return res.data;
 }
 
-/**
- * POST /auth/register
- */
+
+ // POST /auth/register
+
 export async function register(
   payload: RegisterPayload,
 ): Promise<AuthUser> {
@@ -41,9 +40,9 @@ export async function register(
   return res.data;
 }
 
-/**
- * GET /auth/me
- */
+
+ // GET /auth/me
+ 
 export async function fetchCurrentUser(): Promise<AuthUser> {
   const res = await apiRequest<ApiSuccessEnvelope<AuthUser>>(
     "/auth/me",

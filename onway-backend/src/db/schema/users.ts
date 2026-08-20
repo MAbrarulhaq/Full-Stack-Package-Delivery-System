@@ -8,19 +8,14 @@ import {
 } from "drizzle-orm/pg-core";
 import { userRoleEnum } from "./enums";
 
-/**
- * Represents staff, admins, and couriers via a single `role` column —
- * see the architecture blueprint (§10/§11) for why this isn't split into
- * separate `staff`/`couriers` tables.
- */
+// Stores staff, admins, and couriers using a single role column.
 export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
     name: text("name").notNull(),
     email: text("email").notNull(),
-    // Never selected out to API responses — enforced at the repository/DTO
-    // layer in a later step, not by the schema itself.
+    // Never exposed in API responses.
     passwordHash: text("password_hash").notNull(),
     role: userRoleEnum("role").notNull().default("staff"),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -31,8 +26,7 @@ export const users = pgTable(
       .defaultNow(),
   },
   (table) => [
-    // Enforces no-duplicate-accounts AND powers the login lookup
-    // (WHERE email = ?) with the same index — see blueprint §J.
+    // Prevents duplicate accounts and speeds up login lookups.
     uniqueIndex("users_email_idx").on(table.email),
   ],
 );

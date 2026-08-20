@@ -10,30 +10,19 @@ import { idParamSchema, paginationQuerySchema } from "../validators/common.valid
 import { orderController } from "../controllers/order.controller";
 import { jwtAuth, requireRole } from "../middleware/auth";
 
-/**
- * Pure wiring: HTTP method + path + validator + middleware + controller
- * handler. No business logic and no database calls live in this file --
- * see order.service.ts / order.repository.ts.
- *
- * Route permission policy:
- *   POST   /             -> admin, staff   (creating an order is a dispatch action)
- *   GET    /             -> admin, staff   (full order-book listing is an ops view)
- *   GET    /my           -> courier only   (own assigned orders; courierId comes from the JWT, never the client)
- *   GET    /:id          -> admin, staff, courier -- but see getOrderByIdForUser in
- *                            order.service.ts: a courier can only view an order they
- *                            are assigned to. requireRole here only proves the caller
- *                            IS a courier, not that they own THIS order -- the
- *                            per-order ownership check happens in the service layer.
- *   PATCH  /:id/status   -> admin, staff   (explicit assessment requirement)
- *   PATCH  /:id/assign   -> admin, staff   (courier assignment is a dispatch action)
- *   DELETE /:id          -> admin, staff   (cancellation is a dispatch action)
- *
- * IMPORTANT: "/my" is registered BEFORE "/:id". Hono's router would
- * otherwise match GET /orders/my against the "/:id" pattern (":id" binds
- * to any single path segment, including the literal string "my"), and
- * the UUID validator on that route would reject "my" with a 400 before
- * the request ever reached the dedicated /my handler.
- */
+// Routes only connect paths, validation, middleware, and controllers.
+// No business logic or database calls belong here.
+
+// Permissions:
+// POST /            -> admin, staff
+// GET /             -> admin, staff
+// GET /my           -> courier
+// GET /:id          -> admin, staff, courier
+// PATCH /:id/status -> admin, staff
+// PATCH /:id/assign -> admin, staff
+// DELETE /:id       -> admin, staff
+
+// /my must come before /:id so Hono does not treat "my" as an order ID.
 export const orderRoutes = new Hono();
 
 orderRoutes.post(

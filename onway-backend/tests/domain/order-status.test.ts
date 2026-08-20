@@ -1,8 +1,8 @@
-/**
- * Pure unit tests for the state machine -- no DB, no HTTP, no app import.
- * This is the "focused unit tests for pure domain logic" half of the
- * suite; everything else in tests/ is an HTTP-level integration test.
- */
+
+ // Pure unit tests for the state machine -- no DB, no HTTP, no app import.
+ // This is the "focused unit tests for pure domain logic" half of the
+ // suite; everything else in tests/ is an HTTP-level integration test.
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {

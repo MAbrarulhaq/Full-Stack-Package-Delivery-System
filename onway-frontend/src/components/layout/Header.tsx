@@ -1,7 +1,15 @@
 import type { ReactNode } from "react";
 import { MobileNav } from "./MobileNav";
 
-export function Header({ title, description }: { title: string; description?: string }) {
+export function Header({
+  title,
+  description,
+  actions,
+}: {
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+}) {
   return (
     <header className="flex h-16 shrink-0 items-center gap-3 border-b border-border bg-surface px-4 md:px-6">
       <MobileNav />
@@ -11,6 +19,7 @@ export function Header({ title, description }: { title: string; description?: st
           <p className="truncate text-xs text-muted">{description}</p>
         ) : null}
       </div>
+      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
     </header>
   );
 }
